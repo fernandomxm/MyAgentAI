@@ -32,3 +32,5 @@ return items; <br> <br>
 8) Send text message Telegram
 
 OBS: Para utilizar o Telegram é necessário acessar o N8N via HTTPS. Para isso foi utlizado NGROK (https://dashboard.ngrok.com/agents) para gerar a conexão HTTPS.
+
+https://youtu.be/xz_X2N-hPg0?si=HozjCrOXs8a9ZXuW
