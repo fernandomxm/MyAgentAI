@@ -4,7 +4,7 @@ MyAgentAI
 Componentes:
 
 1) Telegram Trigger: Bot Telegram @BotFather
-2) Get Date (JavaScript) pegar data atual: <br> <br>
+2) Code: Get Date (JavaScript) pegar data atual: <br> <br>
 
 for (const item of items) {  <br>
   const dateOptions = { <br>
@@ -24,7 +24,7 @@ for (const item of items) {  <br>
 } <br>
 return items; <br> <br>
 
-3) promptFInal: Inclui instrução de prompt para o Agent AI
+3) Edit Fields (Set): promptFInal: Inclui instrução de prompt para o Agent AI
 4) AI Agent
 5) Model Ollama Chat (llama3.2) Local Docker
 6) Simple Memory (Guarda as últimas 5 interações)
