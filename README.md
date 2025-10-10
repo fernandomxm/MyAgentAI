@@ -4,25 +4,25 @@ MyAgentAI
 Componentes:
 
 1) Telegram Trigger: Bot Telegram @BotFather
-2) Get Date (JavaScript) pegar data atual: 
+2) Get Date (JavaScript) pegar data atual: <br> <br>
 
-for (const item of items) {  
-  const dateOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  };  
-  // Use o campo que o Telegram Trigger está gerando, que é 'text'
-  const userInput = item.json.text || item.json.message.text; 
-  item.json.currentDate = new Date().toLocaleString('pt-BR', dateOptions);
-  item.json.currentISO = new Date().toISOString();
-  item.json.message.text = userInput; // Garante que o LLM receba no formato esperado
-}
-return items;
+for (const item of items) {  <br>
+  const dateOptions = { <br>
+    day: '2-digit', <br>
+    month: '2-digit', <br>
+    year: 'numeric', <br>
+    hour: '2-digit', <br>
+    minute: '2-digit', <br>
+    second: '2-digit', <br>
+    hour12: false <br>
+  };   <br>
+  // Use o campo que o Telegram Trigger está gerando, que é 'text' <br>
+  const userInput = item.json.text || item.json.message.text;  <br>
+  item.json.currentDate = new Date().toLocaleString('pt-BR', dateOptions); <br>
+  item.json.currentISO = new Date().toISOString(); <br>
+  item.json.message.text = userInput; // Garante que o LLM receba no formato esperado <br>
+} <br>
+return items; <br> <br>
 
 3) promptFInal: Inclui instrução de prompt para o Agent AI
 4) AI Agent
