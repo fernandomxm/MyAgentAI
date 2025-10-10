@@ -1,5 +1,5 @@
 # MyAgentAI
-![IMAGE01](https://github.com/fernandomxm/fernandomxm/blob/main/img1.png) 
+![IMAGE01](https://github.com/fernandomxm/MyAgentAI/blob/main/MyAgentAI.png) 
 
 Componentes:
 
