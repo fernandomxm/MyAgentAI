@@ -26,7 +26,7 @@ return items; <br> <br>
 
 3) Edit Fields (Set): promptFInal: Inclui instrução de prompt para o Agent AI
 4) AI Agent
-5) Model Ollama Chat (llama3.2) Local Docker
+5) Model Ollama Chat (mistral) Local Docker
 6) Simple Memory (Guarda as últimas 5 interações)
 7) Google Search para pesquisas na internet (https://www.searchapi.io/docs/google)
 8) Send text message Telegram
