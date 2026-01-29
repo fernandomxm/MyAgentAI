@@ -26,7 +26,8 @@ return items; <br> <br>
 
 3) Edit Fields (Set): promptFInal: Inclui instrução de prompt para o Agent AI  <br>
 4) AI Agent  <br>
-5) Model Ollama (qwen2.5) rodando como processo no linux (Melhor performance que em Docker) <br>
+5) Model Ollama (qwen2.5) rodando como processo local no linux (Melhor performance que em Docker) <br>
+     OBS: Por uma questão de performance de execução, o melhor é usar um modelo exemplo OpenAI com uma chave adquirida como serviço <br>
      vim /etc/systemd/system/ollama.service <br>
       Environment="OLLAMA_HOST=0.0.0.0:11434" <br>
  <br>
@@ -57,7 +58,7 @@ n8n: <br>
     extra_hosts: <br>
       - "host.docker.internal:host-gateway" <br>
  <br>
-Precisei usar qwen2.5 ao invés do llama3 pois o llama3 não suporta chamadas para tools <br>
+Precisei usar modelo Mistral ao invés do llama3 pois o llama3 não suporta chamadas para tools <br>
  <br>
 7) Simple Memory (Guarda as últimas 5 interações) <br>
 8) Google Search para pesquisas na internet (https://www.searchapi.io/docs/google) <br>
