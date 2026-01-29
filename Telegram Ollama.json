@@ -1,0 +1,272 @@
+{
+  "name": "Telegram Ollama",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -128
+      ],
+      "id": "a6ba71ba-2211-4233-88ad-887e91f9a629",
+      "name": "Telegram Trigger",
+      "webhookId": "17c18f92-d3fd-414f-8471-d656b12455ce",
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "kbbHkkpnhSHKh3lD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        -128
+      ],
+      "id": "da869392-ccc2-4a3a-95be-e3c459f5467b",
+      "name": "Send a text message",
+      "webhookId": "202775a8-eeb3-41f1-aff6-7557efbdee3b",
+      "credentials": {
+        "telegramApi": {
+          "id": "kbbHkkpnhSHKh3lD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 1
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        80
+      ],
+      "id": "4518b541-5f13-4b62-a39e-96e4ce12cfe8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of items) {\n  \n  const dateOptions = {\n    day: '2-digit',\n    month: '2-digit',\n    year: 'numeric',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false\n  };\n  \n  // Use o campo que o Telegram Trigger está gerando, que é 'text'\n  const userInput = item.json.text || item.json.message.text; \n\n  item.json.currentDate = new Date().toLocaleString('pt-BR', dateOptions);\n  item.json.currentISO = new Date().toISOString();\n  item.json.message.text = userInput; // Garante que o LLM receba no formato esperado\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -128
+      ],
+      "id": "7e036e3a-6100-4056-b38c-88db301baef5",
+      "name": "Get Date"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c284f66d-fef5-4821-abf7-aa1296b7bafd",
+              "name": "promptFinal",
+              "value": "=Você é um assistente de IA em tempo real. A data atual é: {{ $json.currentDate }} e o timezone é o UTC -3. Sendo assim sempre que responder ao usuário a hora, informe 3 horas a menos como sendo a correta.\nResponda à pergunta do usuário: {{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -128
+      ],
+      "id": "8cfa9902-746e-4807-a3a7-5a94bf6c8dba",
+      "name": "promptFinal"
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search?engine=google",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "num",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        80
+      ],
+      "id": "03d53fcf-d2a5-4309-b571-6f7f13063d77",
+      "name": "Google Search",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LkUTvaJyoj10CNoW",
+          "name": "searchapi.io"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.promptFinal }}\n\nA instrução a seguir é muito importante: Responda sempre em Português.\n\nPara respostas relacionadas a data, considerar o formato de data pt-BR DD/MM/AAAA\n\nQuando for fazer alguma pesquisa na internet considere que, a data e hora atuais são: {{ $('Get Date').item.json.currentDate }} e o timezone é o UTC -3. Sendo assim sempre que responder ao usuário a hora, informe 3 horas a menos como sendo a correta.\n\nSempre que a pergunta envolver informações externas, dados atuais, notícias,\neventos recentes ou qualquer coisa que exija atualização em tempo real,\nvocê DEVE usar a ferramenta Google Search antes de responder.\n\nSe a pergunta puder ser respondida apenas com conhecimento interno, responda direto.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        512,
+        -128
+      ],
+      "id": "96da4f49-8ed0-4c89-8778-3d16ffc4b91e",
+      "name": "AI Agent1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:latest",
+        "options": {}
+      },
+      "id": "ca0c4f77-c545-4bbd-b486-12c083ee2fc2",
+      "name": "Ollama - Qwen2.5",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        416,
+        80
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Date": {
+      "main": [
+        [
+          {
+            "node": "promptFinal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "promptFinal": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama - Qwen2.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "America/Sao_Paulo"
+  },
+  "versionId": "119450bd-2855-480e-9eeb-f185001a0fd3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "_onxvL78lE4prWp-WFQqT",
+  "tags": []
+}
