@@ -26,10 +26,42 @@ return items; <br> <br>
 
 3) Edit Fields (Set): promptFInal: Inclui instrução de prompt para o Agent AI
 4) AI Agent
-5) Model Ollama Chat (mistral) Local Docker
-6) Simple Memory (Guarda as últimas 5 interações)
-7) Google Search para pesquisas na internet (https://www.searchapi.io/docs/google)
-8) Send text message Telegram
+5) Model Ollama (qwen2.5) rodando como processo no linux (Melhor performance que em Docker)
+     vim /etc/systemd/system/ollama.service
+      Environment="OLLAMA_HOST=0.0.0.0:11434"
+
+      systemctl daemon-reload
+      systemctl stop ollama
+      systemctl start ollama
+      netstat -anp | grep 11434
+
+      docker-compose.yml
+
+x-n8n: &service-n8n
+  image: n8nio/n8n:latest
+  networks: ['demo']
+  environment:
+    - DB_TYPE=postgresdb
+    - DB_POSTGRESDB_HOST=postgres
+    - DB_POSTGRESDB_USER=${POSTGRES_USER}
+    - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    - N8N_DIAGNOSTICS_ENABLED=false
+    - N8N_PERSONALIZATION_ENABLED=false
+    - N8N_ENCRYPTION_KEY
+    - N8N_USER_MANAGEMENT_JWT_SECRET
+    - OLLAMA_HOST=host.docker.internal:11434
+
+n8n:
+   ports:
+      - 5678:5678
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+Precisei usar qwen2.5 ao invés do llama3 pois o llama3 não suporta chamadas para tools
+
+7) Simple Memory (Guarda as últimas 5 interações)
+8) Google Search para pesquisas na internet (https://www.searchapi.io/docs/google)
+9) Send text message Telegram
 
 OBS: Para utilizar o Telegram é necessário acessar o N8N via HTTPS. Para isso foi utlizado NGROK (https://dashboard.ngrok.com/agents) para gerar a conexão HTTPS.
 
